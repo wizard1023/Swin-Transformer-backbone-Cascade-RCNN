@@ -39,7 +39,7 @@ min_size = 16
 cascade_proposal_ious = [0.5, 0.6, 0.7]
 
 
-labels = ["rust"]
+labels = ['Gun','Knife','Wrench','Pliers','Scissors']
 n_classes = len(labels) + 1  # include background
 
 

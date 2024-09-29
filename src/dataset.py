@@ -6,7 +6,7 @@ import albumentations as A
 import json
 from PIL import Image, ImageDraw
 from torch.utils.data import Dataset
-from . import config
+from src import config
 from torchvision import transforms
 from copy import deepcopy
 from typing import List, TypedDict
@@ -129,9 +129,13 @@ class AnnotationDataset(Dataset):
         self.mode = mode
         super(AnnotationDataset, self).__init__()
         self.annotations = {}
-
-        annotation_files = ["datasets/rust_signboards_round_3.json"]
-        negative_sample_dir = "datasets/normal"
+        if self.mode == 'train':
+            annotation_files = ["/home/data2/lxm/datasets/SIXray_coco/annotations/instances_train2017.json"]
+            prefix_imagePath = '/home/data2/lxm/datasets/SIXray_coco/train2017/'
+        else:
+            annotation_files = ['/home/data2/lxm/datasets/SIXray_coco/annotations/instances_val2017.json']
+            prefix_imagePath = '/home/data2/lxm/datasets/SIXray_coco/val2017/'
+        # negative_sample_dir = "datasets/normal"
         self.data: List[Target] = []
 
         imageId_imagePath = {}
@@ -139,13 +143,13 @@ class AnnotationDataset(Dataset):
         self.cat_coco_ids = [0] # 0 for background
 
         # add negative samples
-        for img in glob(f"{negative_sample_dir}/*.jpg"):
-            data: Target = {
-                "boxes": [],
-                "image_path": img,
-                "segmentations": []
-            }
-            self.data.append(data)
+        # for img in glob(f"{negative_sample_dir}/*.jpg"):
+        #     data: Target = {
+        #         "boxes": [],
+        #         "image_path": img,
+        #         "segmentations": []
+        #     }
+        #     self.data.append(data)
 
         # add positive samples
         for annotation_file in annotation_files:
@@ -157,7 +161,7 @@ class AnnotationDataset(Dataset):
             annotations = annotations_["annotations"]
 
             for img in images:
-                imageId_imagePath.update({img["id"]: img["path"]})
+                imageId_imagePath.update({img["id"]: img["file_name"]})
             for cat in categories:
                 self.cls_names.append(cat["name"])
                 self.cat_coco_ids.append(cat["id"])
@@ -165,8 +169,8 @@ class AnnotationDataset(Dataset):
             for anno in annotations:
                 image_id = anno["image_id"]
                 category_id = anno["category_id"]
-                image_path = imageId_imagePath[image_id]
-
+                image_path_ = imageId_imagePath[image_id]
+                image_path = prefix_imagePath + image_path_
                 bbox = anno["bbox"]
                 x, y, w, h = bbox
                 xmin = float(x)
@@ -201,7 +205,7 @@ class AnnotationDataset(Dataset):
         boxes = data["boxes"]
         boxes = np.array(boxes)
 
-        img = Image.open(img_path.replace("/datasets", "datasets"))
+        img = Image.open(img_path)
         img = np.array(img)
 
         if self.mode == "train":
@@ -239,8 +243,8 @@ class AnnotationDataset(Dataset):
 
 if __name__ == "__main__":
     dataset = AnnotationDataset()
-    img, boxes_, cls_idxes, mask_pooling_pred_targets = dataset[0]
+    img, boxes_, cls_idxes = dataset[0]
     print(img)
     print(boxes_)
     print(cls_idxes)
-    print(mask_pooling_pred_targets)
+    # print(mask_pooling_pred_targets)

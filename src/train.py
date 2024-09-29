@@ -1,4 +1,4 @@
-from msilib.schema import Error
+# from msilib.schema import Error
 import torch
 import torch.nn as nn
 import numpy as np
@@ -42,18 +42,18 @@ def train(model: nn.Module, lr, start_epoch, epoches, save_weight_interval=5):
             with torch.no_grad():
                 console_log.print([
                     ("total_loss", total_loss.item()),
-                    ("-rpn_cls_loss", rpn_cls_loss.item()),
-                    ("-rpn_reg_loss", rpn_reg_loss.item()),
-                    ("-roi_cls_loss", roi_cls_loss.item()),
-                    ("-roi_reg_loss", roi_reg_loss.item())
+                    ("rpn_cls_loss", rpn_cls_loss.item()),
+                    ("rpn_reg_loss", rpn_reg_loss.item()),
+                    ("roi_cls_loss", roi_cls_loss.item()),
+                    ("roi_reg_loss", roi_reg_loss.item())
                 ])
                 
-            if batch_id % 20 == 0:
-                visualize(model, f"{epoch}_batch_{batch_id}.jpg")
+            # if batch_id % 20 == 0:
+            #     visualize(model, f"{epoch}_batch_{batch_id}.jpg")
 
         if epoch % save_weight_interval == 0:
             state_dict = model.state_dict()
-            torch.save(state_dict, os.path.join("pths", f"model_epoch_{epoch}.pth"))
+            torch.save(state_dict, os.path.join("ckpt", f"model_epoch_{epoch}.pth"))
 
 
 def train_with_nan(

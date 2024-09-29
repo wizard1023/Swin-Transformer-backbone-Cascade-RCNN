@@ -37,7 +37,7 @@ def main():
         lr=1e-5,
         start_epoch=1,
         epoches=31,
-        save_weight_interval=1
+        save_weight_interval=4
     )
 
 
