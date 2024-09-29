@@ -12,10 +12,13 @@ from PIL import Image
 
 
 def build_model():
-    model = CascadeFasterRCNN(
-        fpn_feature_extractor=Resnet50FPNFeactureExtractor().to(device),
-        fpn_feat_channels=Resnet50FPNFeactureExtractor.fpn_feat_channels
-    ).to(device)
+    # cascade rcnn with res50
+    # model = CascadeFasterRCNN(
+    #     fpn_feature_extractor=Resnet50FPNFeactureExtractor().to(device),
+    #     fpn_feat_channels=Resnet50FPNFeactureExtractor.fpn_feat_channels
+    # ).to(device)
+    # faster rcnn with swin transform
+    model = FasterRCNNSWinFPN().to(device)
     return model
 
 
